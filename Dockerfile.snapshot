@@ -1,0 +1,10 @@
+FROM google/dart:2.2
+COPY ./ ./
+# Install dependencies, pre-build
+RUN pub get
+# Generate snapshot
+RUN dart --snapshot=bin/prod.snapshot  bin/prod.dart
+# Set environment, start server
+ENV ANGEL_ENV=production
+EXPOSE 8081
+CMD dart bin/prod.snapshot

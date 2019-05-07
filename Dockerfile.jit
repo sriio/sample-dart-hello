@@ -1,0 +1,8 @@
+FROM google/dart:2.2
+COPY ./ ./
+# Install dependencies, pre-build
+RUN pub get
+# Set environment, start server
+ENV ANGEL_ENV=production
+EXPOSE 8080
+CMD dart bin/prod.dart

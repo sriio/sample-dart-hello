@@ -1,0 +1,21 @@
+FROM gcr.io/google-appengine/debian9 as build
+RUN apt-get -q update && apt-get install --no-install-recommends -y -q gnupg2 wget git ca-certificates apt-transport-https openssh-client curl unzip
+WORKDIR /app
+RUN wget http://gsdview.appspot.com/dart-archive/channels/stable/raw/2.3.0/sdk/dartsdk-linux-x64-release.zip
+RUN unzip dartsdk-linux-x64-release.zip
+ENV DART_SDK /app/dart-sdk
+ENV PATH $DART_SDK/bin:$PATH
+COPY ./ ./
+# Install dependencies, pre-build
+RUN pub get
+# AOT compilation
+RUN dart2aot bin/prod.dart bin/prod.aot 
+
+FROM ubuntu:18.04
+WORKDIR /app/
+COPY --from=build /app/dart-sdk/bin/dartaotruntime .
+COPY --from=build /app/bin/prod.aot .
+COPY --from=build /app/bin/prod.aot.dill .
+ENV ANGEL_ENV=production
+EXPOSE 8082
+ENTRYPOINT ["/app/dartaotruntime","/app/prod.aot"]
