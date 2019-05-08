@@ -11,11 +11,11 @@ RUN pub get
 # AOT compilation
 RUN dart2aot bin/prod.dart bin/prod.aot 
 
-FROM ubuntu:18.04
+FROM gcr.io/distroless/base:latest
 WORKDIR /app/
 COPY --from=build /app/dart-sdk/bin/dartaotruntime .
 COPY --from=build /app/bin/prod.aot .
 COPY --from=build /app/bin/prod.aot.dill .
 ENV ANGEL_ENV=production
-EXPOSE 8082
+EXPOSE 3000
 ENTRYPOINT ["/app/dartaotruntime","/app/prod.aot"]

@@ -6,5 +6,5 @@ RUN pub get
 RUN dart --snapshot=bin/prod.snapshot  bin/prod.dart
 # Set environment, start server
 ENV ANGEL_ENV=production
-EXPOSE 8081
+EXPOSE 3000
 CMD dart bin/prod.snapshot
